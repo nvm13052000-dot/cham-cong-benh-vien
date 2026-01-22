@@ -4,291 +4,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Chấm Công Bệnh Viện (V5)</title>
-    <!-- Google Fonts: Inter -->
+    <title>Hospital Admin Pro (V6)</title>
+    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <!-- Login Overlay -->
-    <div id="loginOverlay" class="login-overlay">
-        <div class="login-card animate-fade-in">
-            <div class="login-header">
-                <h2>🏥 Bệnh Viện Đa Khoa</h2>
-                <p>Hệ Thống Quản Lý Chấm Công</p>
-                <span class="badge-secure">🔒 Secured System</span>
+    <!-- Login Screen -->
+    <div id="loginOverlay" class="login-wrapper">
+        <div class="login-container">
+            <div class="login-left">
+                <div class="brand">
+                    <h1>🏥 HMS Pro</h1>
+                    <p>Hệ thống Quản Lý Chấm Công</p>
+                </div>
+                <div class="login-illustration">
+                    <!-- CSS Shapes -->
+                    <div class="shape s1"></div>
+                    <div class="shape s2"></div>
+                </div>
             </div>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label>Tên Đăng Nhập</label>
-                    <input type="text" id="loginId" class="form-control" placeholder="Mã NV hoặc Quản trị viên"
-                        required>
+            <div class="login-right">
+                <h2>Đăng Nhập</h2>
+                <p class="subtitle">Vui lòng nhập thông tin xác thực.</p>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>Tên Tài Khoản</label>
+                        <input type="text" id="loginId" class="input-lg" placeholder="Ví dụ: IT_ADMIN" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mật Khẩu</label>
+                        <input type="password" id="loginPass" class="input-lg" placeholder="••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">Truy Cập Hệ Thống</button>
+                </form>
+
+                <div class="login-footer">
+                    <div id="loginMsg" class="msg-box"></div>
+                    <button onclick="forceAutoFix()" class="link-btn">🛠️ Gặp sự cố? Tự động sửa lỗi</button>
+                    <div class="version">Version 6.0 Stable</div>
                 </div>
-                <div class="form-group">
-                    <label>Mật Khẩu</label>
-                    <input type="password" id="loginPass" class="form-control" placeholder="********" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Đăng Nhập</button>
-            </form>
-            <div class="login-footer">
-                <button onclick="resetSystem()"
-                    style="background:none; border:none; color:#dc2626; font-size:0.8rem; cursor:pointer; text-decoration:underline;">⚠️
-                    Lỗi đăng nhập? Bấm để Cài đặt gốc</button>
             </div>
         </div>
     </div>
 
-    <!-- Main App -->
-    <div id="appContainer" class="container animate-fade-in" style="display: none;">
-        <header>
-            <div class="header-title">
-                <h1>🏥 Quản Lý Chấm Công</h1>
-                <h2 id="currentPeriodDisplay" style="font-size: 1.1rem; color: hsl(var(--primary)); margin-top:0.2rem;">
-                    Tháng...</h2>
-                <div class="user-info">
-                    <span id="userWelcome">Xin chào, ...</span>
-                    <button class="btn btn-tiny btn-outline" onclick="openChangePassModal()">🔑 Đổi MK</button>
-                    <button id="btnLogout" class="btn btn-tiny btn-outline">Đăng Xuất</button>
-                </div>
+    <!-- Main Dashboard -->
+    <div id="appContainer" class="app-layout" style="display: none;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🏥 HMS Pro</h2>
             </div>
 
-            <div class="header-controls">
-                <!-- IT Admin Controls -->
-                <div class="control-group" id="itControls" style="display: none;">
-                    <button id="btnUserMgr" class="btn btn-primary">👥 Quản Lý Tài Khoản</button>
-                </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">CHẤM CÔNG</div>
+                <a href="#" class="nav-item active" onclick="switchTab('grid')">📅 Bảng Công</a>
+                <a href="#" class="nav-item" onclick="openStatsModal()">📊 Thống Kê</a>
 
-                <!-- Data Ops -->
-                <div class="control-group">
-                    <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;" />
-                    <button id="btnImport" class="btn btn-outline" title="Nhập DS Nhân viên từ Excel">📂 Import</button>
-                    <button id="btnStats" class="btn btn-outline" title="Xem thống kê">📈 Thống Kê</button>
-                </div>
+                <div class="nav-section">QUẢN TRỊ</div>
+                <a href="#" class="nav-item" id="navUserMgr" style="display:none" onclick="openUserMgr()">👥 Tài
+                    Khoản</a>
+                <a href="#" class="nav-item" onclick="triggerImport()">📂 Import HS</a>
+            </nav>
 
-                <!-- Admin Filters -->
-                <div class="control-group" id="adminFilters" style="display: none;">
-                    <select id="filterDept" class="btn btn-outline">
-                        <option value="ALL">Tất cả Khoa</option>
-                    </select>
-                    <input type="text" id="searchName" class="form-control" placeholder="🔍 Tìm tên..."
-                        style="width: 120px;">
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">U</div>
+                    <div class="info">
+                        <span id="userNameDisplay">User</span>
+                        <small id="userRoleDisplay">Role</small>
+                    </div>
                 </div>
-
-                <!-- Common Controls -->
-                <div class="control-group">
-                    <select id="monthSelect" class="btn btn-outline"></select>
-                    <!-- Bell for Admin (Approvals) -->
-                    <button id="btnRequests" class="btn btn-primary" style="display: none;">🔔 0</button>
-                    <!-- Bell for User (Results) -->
-                    <button id="btnMyNotifs" class="btn btn-outline" style="display: none;">📩 0</button>
-                </div>
+                <button onclick="doLogout()" class="btn-icon" title="Đăng xuất">🚪</button>
             </div>
-        </header>
+        </aside>
 
-        <!-- Main Grid -->
-        <main>
-            <div class="card">
-                <div class="attendance-container">
-                    <table id="attendanceTable">
-                        <thead>
-                            <tr id="headerRow">
-                                <th class="fixed-col">Nhân Viên</th>
-                                <!-- JS populate -->
-                            </tr>
-                        </thead>
-                        <tbody id="attendanceBody">
-                            <!-- JS populate -->
-                        </tbody>
-                    </table>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <h2 id="pageTitle">Tháng ...</h2>
+                    <select id="monthSelect" class="select-classic"></select>
+                </div>
+                <div class="topbar-right">
+                    <!-- Filters -->
+                    <div id="filterContainer" style="display:none">
+                        <select id="filterDept" class="select-classic">
+                            <option value="ALL">Tất cả Khoa</option>
+                        </select>
+                        <input type="text" id="searchName" class="input-sm" placeholder="🔍 Tìm tên...">
+                    </div>
+
+                    <!-- Notifications -->
+                    <button id="btnNotifs" class="btn-icon-badge" onclick="handleNotifClick()">
+                        🔔 <span id="notifBadge" class="badge">0</span>
+                    </button>
+
+                    <!-- Settings -->
+                    <button class="btn btn-outline" onclick="openChangePass()">🔑 Đổi Pass</button>
+                </div>
+            </header>
+
+            <!-- Workspace -->
+            <div class="workspace">
+                <div class="card grid-card">
+                    <div class="table-frame">
+                        <table id="attendanceTable">
+                            <thead>
+                                <tr id="headerRow"></tr>
+                            </thead>
+                            <tbody id="attendanceBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
-
-        <footer>
-            &copy; 2026 Hospital Management System. <span id="timeDisplay"></span>
-        </footer>
     </div>
 
-    <!-- User Manager Modal (IT Only) -->
-    <div id="userMgrModal" class="modal-overlay">
-        <div class="modal-content animate-fade-in" style="max-width: 700px;">
-            <div class="modal-header">
-                <h3>👥 Quản Lý Tài Khoản Hệ Thống</h3>
-                <button class="btn btn-outline" onclick="closeUserMgrModal()">✕</button>
+    <!-- Modals -->
+    <div id="modalOverlay" class="modal-overlay">
+        <!-- Dynamic Content injected here -->
+        <div id="modalContent" class="modal-card">
+            <div class="modal-head">
+                <h3 id="modalTitle">Title</h3>
+                <button onclick="closeModal()" class="close-btn">✕</button>
             </div>
-
-            <div class="form-group" style="background:#f9fafb; padding:1rem; border-radius:8px;">
-                <h4>Cấp Mới / Reset Tài Khoản</h4>
-                <form id="userCreateForm" style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:flex-end;">
-                    <div>
-                        <label>Tên Đăng Nhập</label>
-                        <input type="text" id="newUserId" class="form-control" placeholder="VD: E001" required>
-                    </div>
-                    <div>
-                        <label>Mật Khẩu Mới</label>
-                        <input type="text" id="newUserPass" class="form-control" placeholder="VD: 123456" required>
-                    </div>
-                    <div>
-                        <label>Vai Trò</label>
-                        <select id="newUserRole" class="form-control">
-                            <option value="HEAD">Trưởng Khoa</option>
-                            <option value="ADMIN">Giám Đốc (Admin)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Khoa Quản Lý</label>
-                        <input type="text" id="newUserDept" class="form-control" placeholder="Nhập tên Khoa chính xác">
-                        <small style="display:block; font-size:10px; color:gray">Để trống nếu là Admin</small>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Lưu / Cấp</button>
-                </form>
-            </div>
-
-            <table class="approval-table">
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Vai Trò</th>
-                        <th>Khoa Quản Lý</th>
-                        <th>Thao Tác</th>
-                    </tr>
-                </thead>
-                <tbody id="userListBody"></tbody>
-            </table>
+            <div id="modalBody" class="modal-body"></div>
         </div>
     </div>
 
-    <!-- Change Password Modal -->
-    <div id="changePassModal" class="modal-overlay">
-        <div class="modal-content animate-fade-in" style="max-width: 400px;">
-            <div class="modal-header">
-                <h3>🔑 Đổi Mật Khẩu</h3>
-                <button class="btn btn-outline" onclick="closeChangePassModal()">✕</button>
-            </div>
-            <form id="changePassForm">
-                <div class="form-group">
-                    <label>Mật Khẩu Mới</label>
-                    <input type="password" id="newSelfPass" class="form-control" required minlength="4">
-                </div>
-                <div class="form-group">
-                    <label>Xác Nhận Mật Khẩu</label>
-                    <input type="password" id="confirmSelfPass" class="form-control" required minlength="4">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width:100%">Cập nhật</button>
-            </form>
-        </div>
-    </div>
+    <!-- Hidden File Input -->
+    <input type="file" id="fileInput" accept=".xlsx,.xls" hidden />
 
-    <!-- Stats Modal -->
-    <div id="statsModal" class="modal-overlay">
-        <div class="modal-content animate-fade-in" style="max-width: 800px;">
-            <div class="modal-header">
-                <h3>📊 Thống Kê Chấm Công</h3>
-                <button class="btn btn-outline" onclick="closeStatsModal()">✕</button>
-            </div>
-            <div style="overflow: auto; max-height: 50vh;">
-                <table class="approval-table" id="statsTable">
-                    <thead>
-                        <tr>
-                            <th>Mã NV</th>
-                            <th>Họ Tên</th>
-                            <th>Khoa</th>
-                            <th>Đi Làm (X)</th>
-                            <th>Phép (P)</th>
-                            <th>Vắng (V)</th>
-                            <th>Tổng Công</th>
-                        </tr>
-                    </thead>
-                    <tbody id="statsBody"></tbody>
-                </table>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-primary" onclick="exportExcel()">📤 Xuất Excel</button>
-            </div>
-        </div>
-    </div>
+    <!-- Toast -->
+    <div id="toastContainer" class="toast-stack"></div>
 
-    <!-- Request (Send) Modal -->
-    <div id="requestModal" class="modal-overlay">
-        <div class="modal-content animate-fade-in">
-            <h3>🔒 Gửi Yêu Cầu Chỉnh Sửa</h3>
-            <form id="requestForm">
-                <input type="hidden" id="reqEmployeeId">
-                <input type="hidden" id="reqDate">
-                <div class="form-group">
-                    <label>Sửa thành:</label>
-                    <select id="reqValue" class="form-control">
-                        <option value="X">X - Đi làm</option>
-                        <option value="P">P - Nghỉ Phép</option>
-                        <option value="V">V - Vắng</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Lý do:</label>
-                    <textarea id="reqReason" class="form-control" rows="2" required></textarea>
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-outline" onclick="closeModal()">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Gửi</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Approval (Admin) Modal -->
-    <div id="approvalsModal" class="modal-overlay">
-        <div class="modal-content animate-fade-in" style="max-width: 800px;">
-            <div class="modal-header">
-                <h3>📋 Danh Sách Yêu Cầu Cần Duyệt</h3>
-                <button class="btn btn-outline" onclick="closeApprovalsModal()">✕</button>
-            </div>
-            <div class="table-wrapper">
-                <table class="approval-table">
-                    <thead>
-                        <tr>
-                            <th>NV</th>
-                            <th>Ngày</th>
-                            <th>Yêu Cầu</th>
-                            <th>Lý Do</th>
-                            <th>Thao Tác</th>
-                        </tr>
-                    </thead>
-                    <tbody id="approvalsBody"></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- My Notifications (User) Modal -->
-    <div id="myNotifModal" class="modal-overlay">
-        <div class="modal-content animate-fade-in" style="max-width: 600px;">
-            <div class="modal-header">
-                <h3>📩 Hộp Thư Thông Báo</h3>
-                <button class="btn btn-outline" onclick="closeMyNotifModal()">✕</button>
-            </div>
-            <div class="table-wrapper">
-                <table class="approval-table">
-                    <thead>
-                        <tr>
-                            <th>Ngày</th>
-                            <th>Nội Dung</th>
-                            <th>Kết Quả</th>
-                        </tr>
-                    </thead>
-                    <tbody id="myNotifBody"></tbody>
-                </table>
-            </div>
-            <div style="margin-top:1rem; text-align:right">
-                <button class="btn btn-tiny btn-outline" onclick="clearMyNotifs()">Xóa hết</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="toastContainer" class="toast-container"></div>
     <script src="app.js"></script>
 </body>
 
