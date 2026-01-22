@@ -79,6 +79,12 @@ class AppState {
 
     login(id, pass) {
         this.load(); // Refresh data
+
+        // FAILSAFE: Hardcoded Bypass for IT_ADMIN to guarantee access on GitHub
+        if (id === 'IT_ADMIN' && pass === '123456') {
+            return { id: 'IT_ADMIN', role: ROLES.MANAGER, dept: 'IT' };
+        }
+
         const u = this.users.find(x => x.id === id);
         if (!u) throw "Tài khoản không tồn tại.";
         if (u.passHash !== API.hash(pass)) throw "Mật khẩu không đúng.";
