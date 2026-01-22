@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Chấm Công Bệnh Viện (V4)</title>
+    <title>Hệ Thống Chấm Công Bệnh Viện (V5)</title>
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +35,9 @@
                 <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Đăng Nhập</button>
             </form>
             <div class="login-footer">
-                <small>Liên hệ IT nếu quên mật khẩu.</small>
+                <button onclick="resetSystem()"
+                    style="background:none; border:none; color:#dc2626; font-size:0.8rem; cursor:pointer; text-decoration:underline;">⚠️
+                    Lỗi đăng nhập? Bấm để Cài đặt gốc</button>
             </div>
         </div>
     </div>
@@ -45,8 +47,11 @@
         <header>
             <div class="header-title">
                 <h1>🏥 Quản Lý Chấm Công</h1>
+                <h2 id="currentPeriodDisplay" style="font-size: 1.1rem; color: hsl(var(--primary)); margin-top:0.2rem;">
+                    Tháng...</h2>
                 <div class="user-info">
                     <span id="userWelcome">Xin chào, ...</span>
+                    <button class="btn btn-tiny btn-outline" onclick="openChangePassModal()">🔑 Đổi MK</button>
                     <button id="btnLogout" class="btn btn-tiny btn-outline">Đăng Xuất</button>
                 </div>
             </div>
@@ -76,7 +81,10 @@
                 <!-- Common Controls -->
                 <div class="control-group">
                     <select id="monthSelect" class="btn btn-outline"></select>
+                    <!-- Bell for Admin (Approvals) -->
                     <button id="btnRequests" class="btn btn-primary" style="display: none;">🔔 0</button>
+                    <!-- Bell for User (Results) -->
+                    <button id="btnMyNotifs" class="btn btn-outline" style="display: none;">📩 0</button>
                 </div>
             </div>
         </header>
@@ -154,6 +162,27 @@
         </div>
     </div>
 
+    <!-- Change Password Modal -->
+    <div id="changePassModal" class="modal-overlay">
+        <div class="modal-content animate-fade-in" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>🔑 Đổi Mật Khẩu</h3>
+                <button class="btn btn-outline" onclick="closeChangePassModal()">✕</button>
+            </div>
+            <form id="changePassForm">
+                <div class="form-group">
+                    <label>Mật Khẩu Mới</label>
+                    <input type="password" id="newSelfPass" class="form-control" required minlength="4">
+                </div>
+                <div class="form-group">
+                    <label>Xác Nhận Mật Khẩu</label>
+                    <input type="password" id="confirmSelfPass" class="form-control" required minlength="4">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Cập nhật</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Stats Modal -->
     <div id="statsModal" class="modal-overlay">
         <div class="modal-content animate-fade-in" style="max-width: 800px;">
@@ -183,7 +212,7 @@
         </div>
     </div>
 
-    <!-- Request & Approval Modals (Same as V3) -->
+    <!-- Request (Send) Modal -->
     <div id="requestModal" class="modal-overlay">
         <div class="modal-content animate-fade-in">
             <h3>🔒 Gửi Yêu Cầu Chỉnh Sửa</h3>
@@ -210,10 +239,11 @@
         </div>
     </div>
 
+    <!-- Approval (Admin) Modal -->
     <div id="approvalsModal" class="modal-overlay">
         <div class="modal-content animate-fade-in" style="max-width: 800px;">
             <div class="modal-header">
-                <h3>📋 Danh Sách Yêu Cầu</h3>
+                <h3>📋 Danh Sách Yêu Cầu Cần Duyệt</h3>
                 <button class="btn btn-outline" onclick="closeApprovalsModal()">✕</button>
             </div>
             <div class="table-wrapper">
@@ -229,6 +259,31 @@
                     </thead>
                     <tbody id="approvalsBody"></tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Notifications (User) Modal -->
+    <div id="myNotifModal" class="modal-overlay">
+        <div class="modal-content animate-fade-in" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>📩 Hộp Thư Thông Báo</h3>
+                <button class="btn btn-outline" onclick="closeMyNotifModal()">✕</button>
+            </div>
+            <div class="table-wrapper">
+                <table class="approval-table">
+                    <thead>
+                        <tr>
+                            <th>Ngày</th>
+                            <th>Nội Dung</th>
+                            <th>Kết Quả</th>
+                        </tr>
+                    </thead>
+                    <tbody id="myNotifBody"></tbody>
+                </table>
+            </div>
+            <div style="margin-top:1rem; text-align:right">
+                <button class="btn btn-tiny btn-outline" onclick="clearMyNotifs()">Xóa hết</button>
             </div>
         </div>
     </div>
