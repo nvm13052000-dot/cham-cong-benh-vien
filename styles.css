@@ -9,10 +9,13 @@
     --border: 214.3 31.8% 91.4%;
     --radius: 0.5rem;
 
-    /* Attendance Colors */
-    --status-x: 142 76% 36%;
-    --status-p: 38 92% 50%;
-    --status-v: 0 84% 60%;
+    /* Attendance Colors (Updated for better contrast) */
+    --status-x: 142 70% 45%;
+    /* Green */
+    --status-p: 35 90% 55%;
+    /* Orange */
+    --status-v: 0 80% 60%;
+    /* Red */
 }
 
 * {
@@ -107,7 +110,7 @@ header {
 /* Grid */
 .attendance-container {
     overflow: auto;
-    max-height: 80vh;
+    max-height: 75vh;
     border: 1px solid hsl(var(--border));
     border-radius: var(--radius);
     background: white;
@@ -156,7 +159,7 @@ th.fixed-col {
 
 /* Cell States */
 .day-past {
-    background-color: rgba(0, 0, 0, 0.02);
+    background-color: rgba(243, 244, 246, 0.7);
 }
 
 .day-today {
@@ -207,6 +210,7 @@ th.fixed-col {
     align-items: center;
     gap: 0.5rem;
     transition: opacity 0.2s;
+    white-space: nowrap;
 }
 
 .btn:hover {
@@ -331,7 +335,6 @@ th.fixed-col {
     }
 }
 
-/* Animations */
 .animate-fade-in {
     animation: fadeIn 0.4s ease-out;
 }
