@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Chấm Công Bệnh Viện (V4)</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card animate-fade-in">
+            <div class="login-header">
+                <h2>🏥 Bệnh Viện Đa Khoa</h2>
+                <p>Hệ Thống Quản Lý Chấm Công</p>
+                <span class="badge-secure">🔒 Secured System</span>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Tên Đăng Nhập</label>
+                    <input type="text" id="loginId" class="form-control" placeholder="Mã NV hoặc Quản trị viên"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label>Mật Khẩu</label>
+                    <input type="password" id="loginPass" class="form-control" placeholder="********" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Đăng Nhập</button>
+            </form>
+            <div class="login-footer">
+                <small>Liên hệ IT nếu quên mật khẩu.</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="appContainer" class="container animate-fade-in" style="display: none;">
+        <header>
+            <div class="header-title">
+                <h1>🏥 Quản Lý Chấm Công</h1>
+                <div class="user-info">
+                    <span id="userWelcome">Xin chào, ...</span>
+                    <button id="btnLogout" class="btn btn-tiny btn-outline">Đăng Xuất</button>
+                </div>
+            </div>
+
+            <div class="header-controls">
+                <!-- IT Admin Controls -->
+                <div class="control-group" id="itControls" style="display: none;">
+                    <button id="btnUserMgr" class="btn btn-primary">👥 Quản Lý Tài Khoản</button>
+                </div>
+
+                <!-- Data Ops -->
+                <div class="control-group">
+                    <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;" />
+                    <button id="btnImport" class="btn btn-outline" title="Nhập DS Nhân viên từ Excel">📂 Import</button>
+                    <button id="btnStats" class="btn btn-outline" title="Xem thống kê">📈 Thống Kê</button>
+                </div>
+
+                <!-- Admin Filters -->
+                <div class="control-group" id="adminFilters" style="display: none;">
+                    <select id="filterDept" class="btn btn-outline">
+                        <option value="ALL">Tất cả Khoa</option>
+                    </select>
+                    <input type="text" id="searchName" class="form-control" placeholder="🔍 Tìm tên..."
+                        style="width: 120px;">
+                </div>
+
+                <!-- Common Controls -->
+                <div class="control-group">
+                    <select id="monthSelect" class="btn btn-outline"></select>
+                    <button id="btnRequests" class="btn btn-primary" style="display: none;">🔔 0</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Grid -->
+        <main>
+            <div class="card">
+                <div class="attendance-container">
+                    <table id="attendanceTable">
+                        <thead>
+                            <tr id="headerRow">
+                                <th class="fixed-col">Nhân Viên</th>
+                                <!-- JS populate -->
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceBody">
+                            <!-- JS populate -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            &copy; 2026 Hospital Management System. <span id="timeDisplay"></span>
+        </footer>
+    </div>
+
+    <!-- User Manager Modal (IT Only) -->
+    <div id="userMgrModal" class="modal-overlay">
+        <div class="modal-content animate-fade-in" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3>👥 Quản Lý Tài Khoản Hệ Thống</h3>
+                <button class="btn btn-outline" onclick="closeUserMgrModal()">✕</button>
+            </div>
+
+            <div class="form-group" style="background:#f9fafb; padding:1rem; border-radius:8px;">
+                <h4>Cấp Mới / Reset Tài Khoản</h4>
+                <form id="userCreateForm" style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:flex-end;">
+                    <div>
+                        <label>Tên Đăng Nhập</label>
+                        <input type="text" id="newUserId" class="form-control" placeholder="VD: E001" required>
+                    </div>
+                    <div>
+                        <label>Mật Khẩu Mới</label>
+                        <input type="text" id="newUserPass" class="form-control" placeholder="VD: 123456" required>
+                    </div>
+                    <div>
+                        <label>Vai Trò</label>
+                        <select id="newUserRole" class="form-control">
+                            <option value="HEAD">Trưởng Khoa</option>
+                            <option value="ADMIN">Giám Đốc (Admin)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Khoa Quản Lý</label>
+                        <input type="text" id="newUserDept" class="form-control" placeholder="Nhập tên Khoa chính xác">
+                        <small style="display:block; font-size:10px; color:gray">Để trống nếu là Admin</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Lưu / Cấp</button>
+                </form>
+            </div>
+
+            <table class="approval-table">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Vai Trò</th>
+                        <th>Khoa Quản Lý</th>
+                        <th>Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody id="userListBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="statsModal" class="modal-overlay">
+        <div class="modal-content animate-fade-in" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>📊 Thống Kê Chấm Công</h3>
+                <button class="btn btn-outline" onclick="closeStatsModal()">✕</button>
+            </div>
+            <div style="overflow: auto; max-height: 50vh;">
+                <table class="approval-table" id="statsTable">
+                    <thead>
+                        <tr>
+                            <th>Mã NV</th>
+                            <th>Họ Tên</th>
+                            <th>Khoa</th>
+                            <th>Đi Làm (X)</th>
+                            <th>Phép (P)</th>
+                            <th>Vắng (V)</th>
+                            <th>Tổng Công</th>
+                        </tr>
+                    </thead>
+                    <tbody id="statsBody"></tbody>
+                </table>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="exportExcel()">📤 Xuất Excel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Request & Approval Modals (Same as V3) -->
+    <div id="requestModal" class="modal-overlay">
+        <div class="modal-content animate-fade-in">
+            <h3>🔒 Gửi Yêu Cầu Chỉnh Sửa</h3>
+            <form id="requestForm">
+                <input type="hidden" id="reqEmployeeId">
+                <input type="hidden" id="reqDate">
+                <div class="form-group">
+                    <label>Sửa thành:</label>
+                    <select id="reqValue" class="form-control">
+                        <option value="X">X - Đi làm</option>
+                        <option value="P">P - Nghỉ Phép</option>
+                        <option value="V">V - Vắng</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Lý do:</label>
+                    <textarea id="reqReason" class="form-control" rows="2" required></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Gửi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="approvalsModal" class="modal-overlay">
+        <div class="modal-content animate-fade-in" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>📋 Danh Sách Yêu Cầu</h3>
+                <button class="btn btn-outline" onclick="closeApprovalsModal()">✕</button>
+            </div>
+            <div class="table-wrapper">
+                <table class="approval-table">
+                    <thead>
+                        <tr>
+                            <th>NV</th>
+                            <th>Ngày</th>
+                            <th>Yêu Cầu</th>
+                            <th>Lý Do</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="approvalsBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="app.js"></script>
+</body>
+
+</html>

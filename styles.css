@@ -1,0 +1,349 @@
+:root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --border: 214.3 31.8% 91.4%;
+    --radius: 0.5rem;
+
+    /* Attendance Colors */
+    --status-x: 142 76% 36%;
+    --status-p: 38 92% 50%;
+    --status-v: 0 84% 60%;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-size: 14px;
+}
+
+/* Layout */
+.container {
+    max-width: 100%;
+    padding: 1rem;
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid hsl(var(--border));
+}
+
+.header-controls {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.control-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* Login Overlay */
+.login-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, #6366f1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.login-header h2 {
+    color: hsl(var(--primary));
+    margin-bottom: 0.5rem;
+}
+
+.badge-secure {
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 0.2rem 0.5rem;
+    border-radius: 99px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.login-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: gray;
+    font-size: 0.8rem;
+}
+
+/* Grid */
+.attendance-container {
+    overflow: auto;
+    max-height: 80vh;
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    background: white;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+th,
+td {
+    border-bottom: 1px solid hsl(var(--border));
+    border-right: 1px solid hsl(var(--border));
+    padding: 0.5rem;
+    text-align: center;
+    min-width: 45px;
+}
+
+/* Sticky Headers */
+th {
+    position: sticky;
+    top: 0;
+    background: hsl(var(--muted));
+    z-index: 10;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+}
+
+.fixed-col {
+    position: sticky;
+    left: 0;
+    background: white;
+    z-index: 20;
+    text-align: left;
+    min-width: 250px;
+    padding-left: 1rem;
+    border-right: 2px solid hsl(var(--border));
+}
+
+th.fixed-col {
+    z-index: 30;
+    background: hsl(var(--muted));
+}
+
+/* Cell States */
+.day-past {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.day-today {
+    background-color: rgba(59, 130, 246, 0.05);
+    border-left: 2px solid hsl(var(--primary));
+    border-right: 2px solid hsl(var(--primary));
+}
+
+.cell-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cell-input:focus {
+    outline: 2px solid hsl(var(--primary));
+    background: white;
+}
+
+.cell-locked {
+    color: #999;
+    cursor: not-allowed;
+}
+
+.status-X {
+    color: hsl(var(--status-x));
+}
+
+.status-P {
+    color: hsl(var(--status-p));
+}
+
+.status-V {
+    color: hsl(var(--status-v));
+}
+
+/* Components */
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 500;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: opacity 0.2s;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn-primary {
+    background: hsl(var(--primary));
+    color: white;
+}
+
+.btn-outline {
+    border: 1px solid hsl(var(--border));
+    background: white;
+    color: hsl(var(--foreground));
+}
+
+.btn-tiny {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.text-muted {
+    color: hsl(var(--muted-foreground));
+}
+
+/* Tables (Approval / Stats) */
+.approval-table {
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.approval-table th {
+    background: #f9fafb;
+    color: #6b7280;
+    text-align: left;
+    padding: 0.75rem;
+}
+
+.approval-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    backdrop-filter: blur(2px);
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+/* Toast */
+.toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.toast {
+    background: white;
+    color: hsl(var(--foreground));
+    padding: 1rem;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid hsl(var(--status-x));
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Animations */
+.animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
